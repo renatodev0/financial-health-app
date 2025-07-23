@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Pig body -->
+  <circle cx="12" cy="12" r="8" fill="#2563eb" fill-opacity="0.1"/>
+  
+  <!-- Pig ears -->
+  <path d="M8 7c0-1 0.5-2 1.5-2S11 6 11 7"/>
+  <path d="M13 7c0-1 0.5-2 1.5-2S16 6 16 7"/>
+  
+  <!-- Pig nose/snout -->
+  <ellipse cx="12" cy="12" rx="3" ry="2" fill="#2563eb" fill-opacity="0.2"/>
+  <circle cx="11" cy="11.5" r="0.5" fill="#2563eb"/>
+  <circle cx="13" cy="11.5" r="0.5" fill="#2563eb"/>
+  
+  <!-- Pig eyes -->
+  <circle cx="10" cy="9" r="1" fill="#2563eb"/>
+  <circle cx="14" cy="9" r="1" fill="#2563eb"/>
+  
+  <!-- Pig tail -->
+  <path d="M20 12c0 1-1 2-2 1.5s-1-1.5 0-2 2 0 2 0.5z"/>
+  
+  <!-- Dollar sign for finance theme -->
+  <path d="M12 16v1M12 7v1M9.5 14.5c0 1 1 2 2.5 2s2.5-1 2.5-2-1-1-2.5-1-2.5 0-2.5 1z"/>
+  <path d="M9.5 9.5c0-1 1-2 2.5-2s2.5 1 2.5 2"/>
+</svg>
