@@ -90,23 +90,25 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-        <div className="flex items-center space-x-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+        <div className="flex items-center justify-center sm:justify-end space-x-2">
           <Button
             variant="outline"
             size="icon"
             onClick={() => navigateMonth('prev')}
+            className="h-8 w-8 sm:h-10 sm:w-10"
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <div className="text-lg font-semibold min-w-[200px] text-center text-gray-700 dark:text-gray-300">
+          <div className="text-base sm:text-lg font-semibold min-w-[180px] sm:min-w-[200px] text-center text-gray-700 dark:text-gray-300">
             {format(currentDate, 'MMMM yyyy', { locale: ptBR })}
           </div>
           <Button
             variant="outline"
             size="icon"
             onClick={() => navigateMonth('next')}
+            className="h-8 w-8 sm:h-10 sm:w-10"
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -114,7 +116,7 @@ export default function Dashboard() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="border-green-200 bg-green-50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-green-800">

@@ -17,8 +17,8 @@ import {
   DialogTrigger,
 } from '../components/ui/dialog';
 import { Label } from '../components/ui/label';
-import { fixedIncomesService, categoriesService } from '../services';
-import type { FixedIncome, CreateFixedIncomeDto, Category } from '../types';
+import { fixedIncomesService } from '../services';
+import type { FixedIncome, CreateFixedIncomeDto } from '../types';
 
 export default function FixedIncomes() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -26,9 +26,6 @@ export default function FixedIncomes() {
     name: '',
     amount: 0,
     dayOfMonth: 1,
-    categoryId: '',
-    startDate: new Date().toISOString().split('T')[0],
-    endDate: undefined,
   });
 
   const queryClient = useQueryClient();
@@ -36,11 +33,6 @@ export default function FixedIncomes() {
   const { data: fixedIncomes = [], isLoading } = useQuery<FixedIncome[]>({
     queryKey: ['fixedIncomes'],
     queryFn: fixedIncomesService.getAll,
-  });
-
-  const { data: categories = [] } = useQuery<Category[]>({
-    queryKey: ['categories', 'incomes'],
-    queryFn: categoriesService.getIncomeCategories,
   });
 
   const createMutation = useMutation({
@@ -53,9 +45,6 @@ export default function FixedIncomes() {
         name: '',
         amount: 0,
         dayOfMonth: 1,
-        categoryId: '',
-        startDate: new Date().toISOString().split('T')[0],
-        endDate: undefined,
       });
     },
   });
@@ -67,12 +56,19 @@ export default function FixedIncomes() {
     }).format(value);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      amount: 0,
+      dayOfMonth: 1,
+    });
+  };
+
+    const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.categoryId) {
-      return; // Categoria é obrigatória
-    }
     createMutation.mutate(formData);
+    setIsCreateDialogOpen(false);
+    resetForm();
   };
 
   const handleInputChange = (field: keyof CreateFixedIncomeDto, value: string | number | undefined) => {
@@ -85,7 +81,7 @@ export default function FixedIncomes() {
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold text-gray-900">Receitas Fixas</h1>
         </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
             <Card key={i}>
               <CardHeader>
@@ -107,16 +103,19 @@ export default function FixedIncomes() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Receitas Fixas</h1>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Receitas Fixas</h1>
+        <Dialog open={isCreateDialogOpen} onOpenChange={(open) => {
+          setIsCreateDialogOpen(open);
+          if (!open) resetForm();
+        }}>
           <DialogTrigger asChild>
-            <Button className="bg-green-600 hover:bg-green-700">
+            <Button className="bg-green-600 hover:bg-green-700 w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
               Adicionar Receita Fixa
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="mx-4 w-[calc(100vw-2rem)] max-w-md sm:mx-auto sm:w-full">
             <DialogHeader>
               <DialogTitle>Nova Receita Fixa</DialogTitle>
               <DialogDescription>
@@ -131,7 +130,7 @@ export default function FixedIncomes() {
                   type="text"
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full px-3 py-3 text-base sm:py-2 sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                   placeholder="Ex: Salário"
                   required
                 />
@@ -147,14 +146,14 @@ export default function FixedIncomes() {
                     step="0.01"
                     value={formData.amount}
                     onChange={(e) => handleInputChange('amount', parseFloat(e.target.value))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full px-3 py-3 text-base sm:py-2 sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                     placeholder="0,00"
                     required
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="dayOfMonth">Dia do Recebimento</Label>
+                  <Label htmlFor="dayOfMonth">Dia do Mês</Label>
                   <input
                     id="dayOfMonth"
                     type="number"
@@ -162,35 +161,20 @@ export default function FixedIncomes() {
                     max="31"
                     value={formData.dayOfMonth}
                     onChange={(e) => handleInputChange('dayOfMonth', parseInt(e.target.value))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full px-3 py-3 text-base sm:py-2 sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     required
                   />
                 </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="categoryId">Categoria</Label>
-                <select
-                  id="categoryId"
-                  value={formData.categoryId}
-                  onChange={(e) => handleInputChange('categoryId', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                  required
-                >
-                  <option value="">Selecione uma categoria</option>
-                  {categories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
               </div>
               
               <div className="flex justify-end space-x-2 pt-4">
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setIsCreateDialogOpen(false)}
+                  onClick={() => {
+                    setIsCreateDialogOpen(false);
+                    resetForm();
+                  }}
                 >
                   Cancelar
                 </Button>
@@ -226,7 +210,7 @@ export default function FixedIncomes() {
           </Button>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {fixedIncomes.map((income) => (
             <Card key={income.id} className="hover:shadow-md transition-shadow">
               <CardHeader className="pb-4">
@@ -249,22 +233,12 @@ export default function FixedIncomes() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center text-sm text-gray-600">
                     <Calendar className="h-4 w-4 mr-1" />
-                    Recebimento
+                    Data de Recebimento
                   </div>
-                  <span className="font-medium">Dia {income.dayOfMonth}</span>
+                  <span className="font-medium">
+                    Dia {income.dayOfMonth}
+                  </span>
                 </div>
-                
-                {income.category && (
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-600">Categoria</div>
-                    <span 
-                      className="px-2 py-1 rounded-full text-xs font-medium text-white"
-                      style={{ backgroundColor: income.category.color || '#6B7280' }}
-                    >
-                      {income.category.name}
-                    </span>
-                  </div>
-                )}
               </CardContent>
             </Card>
           ))}

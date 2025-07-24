@@ -36,16 +36,8 @@ export interface FixedExpense {
   name: string;
   amount: number;
   dueDay: number;
-  categoryId: string;
-  creditCardId?: string;
-  isActive: boolean;
-  startDate: string;
-  endDate?: string;
   createdAt: string;
   updatedAt: string;
-  category?: Category;
-  creditCard?: CreditCard;
-  expenses?: Expense[];
 }
 
 export interface Expense {
@@ -98,14 +90,8 @@ export interface FixedIncome {
   name: string;
   amount: number;
   dayOfMonth: number;
-  categoryId: string;
-  isActive: boolean;
-  startDate: string;
-  endDate?: string;
   createdAt: string;
   updatedAt: string;
-  category?: Category;
-  incomes?: Income[];
 }
 
 export interface Income {
@@ -222,19 +208,12 @@ export interface CreateFixedIncomeDto {
   name: string;
   amount: number;
   dayOfMonth: number;
-  categoryId: string;
-  startDate: string;
-  endDate?: string;
 }
 
 export interface CreateFixedExpenseDto {
   name: string;
   amount: number;
   dueDay: number;
-  categoryId: string;
-  creditCardId?: string;
-  startDate: string;
-  endDate?: string;
 }
 
 export interface CreateInvestmentDto {

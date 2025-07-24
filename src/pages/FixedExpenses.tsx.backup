@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, ShoppingCart, Calendar, DollarSign, CreditCard as CreditCardIcon } from 'lucide-react';
+import { Plus, Home, Calendar, DollarSign, CreditCard as CreditCardIcon } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -17,50 +17,34 @@ import {
   DialogTrigger,
 } from '../components/ui/dialog';
 import { Label } from '../components/ui/label';
-import { purchasesService, categoriesService, creditCardsService } from '../services';
-import type { Purchase, CreatePurchaseDto, Category, CreditCard } from '../types';
+import { fixedExpensesService } from '../services';
+import type { FixedExpense, CreateFixedExpenseDto } from '../types';
 
-export default function Purchases() {
+export default function FixedExpenses() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [formData, setFormData] = useState<CreatePurchaseDto>({
-    description: '',
-    totalAmount: 0,
-    installments: 1,
-    purchaseDate: new Date().toISOString().split('T')[0],
-    creditCardId: undefined,
-    categoryId: '',
+  const [formData, setFormData] = useState<CreateFixedExpenseDto>({
+    name: '',
+    amount: 0,
+    dueDate: new Date().toISOString().split('T')[0],
   });
 
   const queryClient = useQueryClient();
 
-  const { data: purchases = [], isLoading } = useQuery<Purchase[]>({
-    queryKey: ['purchases'],
-    queryFn: purchasesService.getAll,
-  });
-
-  const { data: categories = [] } = useQuery<Category[]>({
-    queryKey: ['categories', 'expenses'],
-    queryFn: categoriesService.getExpenseCategories,
-  });
-
-  const { data: creditCards = [] } = useQuery<CreditCard[]>({
-    queryKey: ['creditCards'],
-    queryFn: creditCardsService.getAll,
+  const { data: fixedExpenses = [], isLoading } = useQuery<FixedExpense[]>({
+    queryKey: ['fixedExpenses'],
+    queryFn: fixedExpensesService.getAll,
   });
 
   const createMutation = useMutation({
-    mutationFn: purchasesService.create,
+    mutationFn: fixedExpensesService.create,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['purchases'] });
+      queryClient.invalidateQueries({ queryKey: ['fixedExpenses'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       setIsCreateDialogOpen(false);
       setFormData({
-        description: '',
-        totalAmount: 0,
-        installments: 1,
-        purchaseDate: new Date().toISOString().split('T')[0],
-        creditCardId: undefined,
-        categoryId: '',
+        name: '',
+        amount: 0,
+        dueDate: new Date().toISOString().split('T')[0],
       });
     },
   });
@@ -74,13 +58,10 @@ export default function Purchases() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.categoryId) {
-      return; // Categoria é obrigatória
-    }
     createMutation.mutate(formData);
   };
 
-  const handleInputChange = (field: keyof CreatePurchaseDto, value: string | number | undefined) => {
+  const handleInputChange = (field: keyof CreateFixedExpenseDto, value: string | number | undefined) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -88,7 +69,7 @@ export default function Purchases() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-900">Compras Parceladas</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Gastos Fixos</h1>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
@@ -113,76 +94,64 @@ export default function Purchases() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Compras Parceladas</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Gastos Fixos</h1>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-purple-600 hover:bg-purple-700 w-full sm:w-auto">
+            <Button className="bg-red-600 hover:bg-red-700 w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
-              Adicionar Compra
+              Adicionar Gasto Fixo
             </Button>
           </DialogTrigger>
           <DialogContent className="mx-4 w-[calc(100vw-2rem)] max-w-md sm:mx-auto sm:w-full">
             <DialogHeader>
-              <DialogTitle>Nova Compra Parcelada</DialogTitle>
+              <DialogTitle>Novo Gasto Fixo</DialogTitle>
               <DialogDescription>
-                Adicione uma nova compra parcelada.
+                Adicione um novo gasto fixo mensal.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="description">Nome da Compra</Label>
+                <Label htmlFor="name">Nome do Gasto</Label>
                 <input
-                  id="description"
+                  id="name"
                   type="text"
-                  value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
-                  className="w-full px-3 py-3 text-base sm:py-2 sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                  placeholder="Ex: Notebook"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  className="w-full px-3 py-3 text-base sm:py-2 sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                  placeholder="Ex: Aluguel"
                   required
                 />
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="totalAmount">Valor Total</Label>
+                  <Label htmlFor="amount">Valor</Label>
                   <input
-                    id="totalAmount"
+                    id="amount"
                     type="number"
                     min="0"
                     step="0.01"
-                    value={formData.totalAmount}
-                    onChange={(e) => handleInputChange('totalAmount', parseFloat(e.target.value))}
-                    className="w-full px-3 py-3 text-base sm:py-2 sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                    value={formData.amount}
+                    onChange={(e) => handleInputChange('amount', parseFloat(e.target.value))}
+                    className="w-full px-3 py-3 text-base sm:py-2 sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                     placeholder="0,00"
                     required
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="installments">Parcelas</Label>
+                  <Label htmlFor="dueDay">Dia do Vencimento</Label>
                   <input
-                    id="installments"
+                    id="dueDay"
                     type="number"
                     min="1"
-                    max="99"
-                    value={formData.installments}
-                    onChange={(e) => handleInputChange('installments', parseInt(e.target.value))}
-                    className="w-full px-3 py-3 text-base sm:py-2 sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                    max="31"
+                    value={formData.dueDay}
+                    onChange={(e) => handleInputChange('dueDay', parseInt(e.target.value))}
+                    className="w-full px-3 py-3 text-base sm:py-2 sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     required
                   />
                 </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="purchaseDate">Data da Compra</Label>
-                <input
-                  id="purchaseDate"
-                  type="date"
-                  value={formData.purchaseDate}
-                  onChange={(e) => handleInputChange('purchaseDate', e.target.value)}
-                  className="w-full px-3 py-3 text-base sm:py-2 sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                  required
-                />
               </div>
               
               <div className="space-y-2">
@@ -191,7 +160,7 @@ export default function Purchases() {
                   id="categoryId"
                   value={formData.categoryId}
                   onChange={(e) => handleInputChange('categoryId', e.target.value)}
-                  className="w-full px-3 py-3 text-base sm:py-2 sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                  className="w-full px-3 py-3 text-base sm:py-2 sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   required
                 >
                   <option value="">Selecione uma categoria</option>
@@ -209,7 +178,7 @@ export default function Purchases() {
                   id="creditCardId"
                   value={formData.creditCardId || ''}
                   onChange={(e) => handleInputChange('creditCardId', e.target.value || undefined)}
-                  className="w-full px-3 py-3 text-base sm:py-2 sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                  className="w-full px-3 py-3 text-base sm:py-2 sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 >
                   <option value="">Débito/Dinheiro</option>
                   {creditCards.map((card) => (
@@ -231,9 +200,9 @@ export default function Purchases() {
                 <Button
                   type="submit"
                   disabled={createMutation.isPending}
-                  className="bg-purple-600 hover:bg-purple-700"
+                  className="bg-red-600 hover:bg-red-700"
                 >
-                  {createMutation.isPending ? 'Criando...' : 'Criar Compra'}
+                  {createMutation.isPending ? 'Criando...' : 'Criar Gasto'}
                 </Button>
               </div>
             </form>
@@ -241,82 +210,73 @@ export default function Purchases() {
         </Dialog>
       </div>
 
-      {/* Purchases Grid */}
-      {purchases.length === 0 ? (
+      {/* Expenses Grid */}
+      {fixedExpenses.length === 0 ? (
         <div className="text-center py-12">
-          <ShoppingCart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <Home className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">
-            Nenhuma compra parcelada cadastrada
+            Nenhum gasto fixo cadastrado
           </h3>
           <p className="text-gray-500 mb-4">
-            Adicione suas compras parceladas para controlar as parcelas.
+            Adicione seus gastos fixos mensais como aluguel, contas, etc.
           </p>
           <Button
             onClick={() => setIsCreateDialogOpen(true)}
-            className="bg-purple-600 hover:bg-purple-700"
+            className="bg-red-600 hover:bg-red-700"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Adicionar Compra
+            Adicionar Gasto Fixo
           </Button>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {purchases.map((purchase) => (
-            <Card key={purchase.id} className="hover:shadow-md transition-shadow">
+          {fixedExpenses.map((expense) => (
+            <Card key={expense.id} className="hover:shadow-md transition-shadow">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center text-lg">
-                  <ShoppingCart className="h-5 w-5 mr-2 text-purple-600" />
-                  {purchase.description}
+                  <Home className="h-5 w-5 mr-2 text-red-600" />
+                  {expense.name}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center text-sm text-gray-600">
                     <DollarSign className="h-4 w-4 mr-1" />
-                    Valor Total
+                    Valor
                   </div>
-                  <span className="font-medium text-purple-600">
-                    {formatCurrency(purchase.totalAmount)}
-                  </span>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-600">Parcelas</div>
-                  <span className="font-medium">
-                    {purchase.installments}x de {formatCurrency(purchase.totalAmount / purchase.installments)}
+                  <span className="font-medium text-red-600">
+                    {formatCurrency(expense.amount)}
                   </span>
                 </div>
                 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center text-sm text-gray-600">
                     <Calendar className="h-4 w-4 mr-1" />
-                    Data da Compra
+                    Vencimento
                   </div>
-                  <span className="font-medium">
-                    {new Date(purchase.purchaseDate).toLocaleDateString('pt-BR')}
-                  </span>
+                  <span className="font-medium">Dia {expense.dueDay}</span>
                 </div>
                 
-                {purchase.creditCard && (
+                {expense.creditCard && (
                   <div className="flex items-center justify-between">
                     <div className="flex items-center text-sm text-gray-600">
                       <CreditCardIcon className="h-4 w-4 mr-1" />
                       Cartão
                     </div>
                     <span className="font-medium text-blue-600">
-                      {purchase.creditCard.name}
+                      {expense.creditCard.name}
                     </span>
                   </div>
                 )}
                 
-                {purchase.category && (
+                {expense.category && (
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-gray-600">Categoria</div>
                     <span 
                       className="px-2 py-1 rounded-full text-xs font-medium text-white"
-                      style={{ backgroundColor: purchase.category.color || '#6B7280' }}
+                      style={{ backgroundColor: expense.category.color || '#6B7280' }}
                     >
-                      {purchase.category.name}
+                      {expense.category.name}
                     </span>
                   </div>
                 )}

@@ -42,27 +42,27 @@ export const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 py-8">
+      <div className="w-full max-w-sm sm:max-w-md">
         {/* Logo */}
-        <div className="flex items-center justify-center mb-8">
-          <PiggyBank className="h-12 w-12 text-blue-600 dark:text-blue-400" />
-          <span className="ml-3 text-2xl font-bold text-gray-900 dark:text-white">
+        <div className="flex items-center justify-center mb-6 sm:mb-8">
+          <PiggyBank className="h-10 w-10 sm:h-12 sm:w-12 text-blue-600 dark:text-blue-400" />
+          <span className="ml-3 text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
             Finance Health
           </span>
         </div>
 
         <Card>
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center">Criar Conta</CardTitle>
-            <CardDescription className="text-center">
+          <CardHeader className="space-y-1 pb-4">
+            <CardTitle className="text-xl sm:text-2xl text-center">Criar Conta</CardTitle>
+            <CardDescription className="text-center text-sm">
               Preencha os dados para criar sua conta
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-md text-sm">
+                <div className="bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-3 sm:px-4 py-2 sm:py-3 rounded-md text-sm">
                   {error}
                 </div>
               )}
@@ -78,6 +78,7 @@ export const Register = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
+                  className="text-base sm:text-sm"
                 />
               </div>
               
@@ -92,6 +93,7 @@ export const Register = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  className="text-base sm:text-sm"
                 />
               </div>
               
@@ -107,6 +109,7 @@ export const Register = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    className="text-base sm:text-sm pr-10"
                   />
                   <button
                     type="button"
@@ -127,14 +130,14 @@ export const Register = () => {
               
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full h-10 sm:h-10"
                 disabled={loading}
               >
                 {loading ? 'Criando conta...' : 'Criar Conta'}
               </Button>
             </form>
             
-            <div className="mt-6 text-center">
+            <div className="mt-4 sm:mt-6 text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Já tem uma conta?{' '}
                 <Link 

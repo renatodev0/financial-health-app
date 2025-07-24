@@ -94,7 +94,7 @@ export default function Investments() {
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Investimentos</h1>
         </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
             <Card key={i}>
               <CardHeader>
@@ -120,16 +120,16 @@ export default function Investments() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Investimentos</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Investimentos</h1>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800">
+            <Button className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
               Adicionar Investimento
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="mx-4 w-[calc(100vw-2rem)] max-w-md sm:mx-auto sm:w-full">
             <DialogHeader>
               <DialogTitle>Novo Investimento</DialogTitle>
               <DialogDescription>
@@ -235,7 +235,7 @@ export default function Investments() {
 
       {/* Summary Cards */}
       {investments.length > 0 && (
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-3">
           <Card className="border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-blue-800 dark:text-blue-200">
@@ -296,7 +296,7 @@ export default function Investments() {
           </Button>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {investments.map((investment) => {
             const returnPercent = calculateReturn(investment.initialAmount, investment.currentAmount);
             const returnValue = investment.currentAmount - investment.initialAmount;
